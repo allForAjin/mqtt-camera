@@ -16,7 +16,7 @@ public class TestClientService {
                 .setCallback(new MessageCallBack(client))
                 .connect();
         client.subscribe(MqttConstant.SUBSCRIBE_TOPIC, 2);
-        client.publish(MqttConstant.SUBSCRIBE_TOPIC, "hello".getBytes(), 2, false);
+        client.publish(MqttConstant.SUBSCRIBE_TOPIC, "hello".getBytes(), 2, true);
     }
 
 

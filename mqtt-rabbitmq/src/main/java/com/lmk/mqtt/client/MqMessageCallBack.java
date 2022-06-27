@@ -69,11 +69,6 @@ public class MqMessageCallBack implements MqttCallback {
     public void deliveryComplete(IMqttDeliveryToken token) {
         logger.info("发送消息{}", token.isComplete() + "");
         logger.info("发送消息主题{}", Arrays.toString(token.getTopics()));
-        try {
-            logger.info("发布消息内容{}", token.getMessage() + "");
-        } catch (MqttException e) {
-            e.printStackTrace();
-        }
 
     }
 

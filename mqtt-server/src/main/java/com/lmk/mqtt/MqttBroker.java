@@ -83,23 +83,26 @@ public class MqttBroker {
         });
 
         try {
+            ChannelCache.threadPool.execute(()->{
+                Scanner scanner = new Scanner(System.in);
+                while (scanner.hasNext()){
+                    if ("exit".equals(scanner.next())){
+                        shutDown();
+                    }
+                }
+            });
+
             ChannelFuture f = bootstrap.bind(1883).sync();
-            f.channel().closeFuture().sync();
             logger.info("mqtt服务器启动成功");
+            //此处会阻塞主线程
+            f.channel().closeFuture().sync();
         } catch (InterruptedException e) {
             e.printStackTrace();
             logger.error("mqtt服务器启动失败");
         }finally {
             shutDown();
         }
-        ChannelCache.threadPool.execute(()->{
-            Scanner scanner = new Scanner(System.in);
-            while (scanner.hasNext()){
-                if ("exit".equals(scanner.next())){
-                    shutDown();
-                }
-            }
-        });
+
 
     }
 
