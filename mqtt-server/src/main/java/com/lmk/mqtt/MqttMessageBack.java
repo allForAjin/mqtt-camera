@@ -435,6 +435,7 @@ public class MqttMessageBack {
             publishMessageStoreList.add(new PublishMessageStore(clientId, header.topicName(), mqttQoS.value(), header.packetId(), message));
         }
         SessionStore sessionStore = ChannelCache.SESSION_STORE_MAP.get(clientId);
+        logger.info("sessionStore:{},doPublish获取channel：{}",sessionStore.getChannelId(),ChannelCache.CHANNEL_ID_MAP.get(sessionStore.getChannelId()));
         Channel channel = channelGroup.find(ChannelCache.CHANNEL_ID_MAP.get(sessionStore.getChannelId()));
         //设置发送内容payload
         ByteBuf payload = Unpooled.buffer();

@@ -1,6 +1,7 @@
 package com.lmk.mqtt;
 
 import com.lmk.mqtt.cache.ChannelCache;
+import com.lmk.mqtt.entity.SessionStore;
 import com.sun.org.apache.bcel.internal.generic.BREAKPOINT;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandler;
@@ -11,12 +12,16 @@ import io.netty.handler.codec.mqtt.MqttConnectPayload;
 import io.netty.handler.codec.mqtt.MqttFixedHeader;
 import io.netty.handler.codec.mqtt.MqttMessage;
 import io.netty.handler.codec.mqtt.MqttMessageType;
+import io.netty.handler.timeout.IdleState;
+import io.netty.handler.timeout.IdleStateEvent;
+import io.netty.util.AttributeKey;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -109,6 +114,38 @@ public class MqttChannelInboundHandler extends ChannelInboundHandlerAdapter {
                     logger.info("接收报文类型错误------" + mqttFixedHeader.messageType());
                     break;
             }
+        }
+    }
+
+    @Override
+    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
+        if (cause instanceof IOException) {
+            // 远程主机强迫关闭了一个现有的连接的异常
+            ctx.close();
+        } else {
+            super.exceptionCaught(ctx, cause);
+        }
+    }
+
+
+    @Override
+    public void userEventTriggered(ChannelHandlerContext ctx, Object evt) throws Exception {
+        if (evt instanceof IdleStateEvent) {
+            IdleStateEvent idleStateEvent = (IdleStateEvent) evt;
+            if (idleStateEvent.state() == IdleState.ALL_IDLE) {
+                Channel channel = ctx.channel();
+                String clientId = (String) channel.attr(AttributeKey.valueOf("clientId")).get();
+                // 发送遗嘱消息
+                if (ChannelCache.SESSION_STORE_MAP.containsKey(clientId)) {
+                    SessionStore sessionStore = ChannelCache.SESSION_STORE_MAP.get(clientId);
+                    if (sessionStore.getWillMessage() != null) {
+                        //遗嘱消息处理
+                    }
+                }
+                ctx.close();
+            }
+        } else {
+            super.userEventTriggered(ctx, evt);
         }
     }
 

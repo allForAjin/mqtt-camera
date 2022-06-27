@@ -18,9 +18,13 @@ import java.util.concurrent.TimeoutException;
  * @createTime 2022-06-24 12:59:52
  */
 public class RabbitMqUtils {
-    private static final String HOST = "10.200.44.212";
-    private static final String USERNAME = "lmk";
-    private static final String PASSWORD = "lmk";
+//    private static final String HOST = "10.200.44.212";
+//    private static final String USERNAME = "lmk";
+//    private static final String PASSWORD = "lmk";
+
+    private static final String HOST = "192.168.10.132";
+    private static final String USERNAME = "admin";
+    private static final String PASSWORD = "admin";
     private static volatile ConnectionFactory factory;
 
     private static final Logger logger = LoggerFactory.getLogger(RabbitMqUtils.class);
@@ -100,9 +104,9 @@ public class RabbitMqUtils {
         }
     }
 
-    public static void consume(Channel channel,String queueName,DeliverCallback deliverCallback,CancelCallback cancelCallback){
+    public static void consume(Channel channel, String queueName, DeliverCallback deliverCallback, CancelCallback cancelCallback) {
         try {
-            channel.basicConsume(queueName,false,deliverCallback,cancelCallback);
+            channel.basicConsume(queueName, false, deliverCallback, cancelCallback);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
