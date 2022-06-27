@@ -23,6 +23,7 @@ import org.springframework.stereotype.Component;
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 import java.sql.Time;
+import java.util.Scanner;
 import java.util.concurrent.TimeUnit;
 
 
@@ -88,8 +89,17 @@ public class MqttBroker {
         } catch (InterruptedException e) {
             e.printStackTrace();
             logger.error("mqtt服务器启动失败");
+        }finally {
+            shutDown();
         }
-
+        ChannelCache.threadPool.execute(()->{
+            Scanner scanner = new Scanner(System.in);
+            while (scanner.hasNext()){
+                if ("exit".equals(scanner.next())){
+                    shutDown();
+                }
+            }
+        });
 
     }
 
