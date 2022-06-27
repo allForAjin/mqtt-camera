@@ -33,18 +33,12 @@ import java.util.concurrent.TimeUnit;
  * @Description TODO
  * @createTime 2022-06-18 13:27:11
  */
-@Component
 public class MqttBroker {
-    @Autowired
-    private MqttProperties mqttProperties;
 
-    @Autowired
-    private MqttChannelInboundHandler mqttChannelInboundHandler;
+    private ChannelGroup channelGroup;
 
-    @Autowired
     private NioEventLoopGroup bossGroup;
 
-    @Autowired
     private NioEventLoopGroup workGroup;
 
     private final Logger logger = LoggerFactory.getLogger(MqttBroker.class);
@@ -56,13 +50,16 @@ public class MqttBroker {
      * @author lmk
      * @Date 2022/6/23 14:50
      */
-    @PostConstruct
     public void startUp() {
-
+        channelGroup = new DefaultChannelGroup(GlobalEventExecutor.INSTANCE);
         ServerBootstrap bootstrap = new ServerBootstrap();
+        bossGroup = new NioEventLoopGroup(1);
+        workGroup = new NioEventLoopGroup();
+
         bootstrap.group(bossGroup, workGroup);
 
         bootstrap.channel(NioServerSocketChannel.class);
+
 
         bootstrap.option(ChannelOption.SO_REUSEADDR, true)
                 .option(ChannelOption.SO_BACKLOG, 1024)
@@ -80,12 +77,12 @@ public class MqttBroker {
                 channelPipeline.addLast(new IdleStateHandler(600, 600, 1200));
                 channelPipeline.addLast("encoder", MqttEncoder.INSTANCE);
                 channelPipeline.addLast("decoder", new MqttDecoder());
-                channelPipeline.addLast(mqttChannelInboundHandler);
+                channelPipeline.addLast(new MqttChannelInboundHandler(channelGroup));
             }
         });
 
         try {
-            ChannelFuture f = bootstrap.bind(mqttProperties.getPort()).sync();
+            ChannelFuture f = bootstrap.bind(1883).sync();
             f.channel().closeFuture().sync();
             logger.info("mqtt服务器启动成功");
         } catch (InterruptedException e) {

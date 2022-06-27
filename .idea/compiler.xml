@@ -9,6 +9,7 @@
         <module name="mqtt-rabbitmq" />
         <module name="mqtt-common" />
         <module name="mqtt-server" />
+        <module name="mqtt-service" />
         <module name="mqtt-client" />
       </profile>
     </annotationProcessing>
@@ -19,6 +20,7 @@
       <module name="mqtt-common" options="-parameters" />
       <module name="mqtt-rabbitmq" options="-parameters" />
       <module name="mqtt-server" options="-parameters" />
+      <module name="mqtt-service" options="-parameters" />
     </option>
   </component>
 </project>

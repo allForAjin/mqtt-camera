@@ -3,6 +3,7 @@ package com.lmk.mqtt;
 import com.lmk.mqtt.cache.ChannelCache;
 import com.sun.org.apache.bcel.internal.generic.BREAKPOINT;
 import io.netty.channel.Channel;
+import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.channel.group.ChannelGroup;
@@ -27,16 +28,15 @@ import java.util.Map;
  * @Description TODO
  * @createTime 2022-06-18 13:35:19
  */
-@Component
 public class MqttChannelInboundHandler extends ChannelInboundHandlerAdapter {
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
-    @Autowired
-    private ChannelGroup channelGroup;
+    private final ChannelGroup channelGroup;
 
-    @PostConstruct
-    private void setChannelGroupForMessageBack(){
+    public MqttChannelInboundHandler(ChannelGroup channelGroup) {
+        this.channelGroup = channelGroup;
         MqttMessageBack.setChannelGroup(channelGroup);
     }
+
 
     @Override
     public void channelRegistered(ChannelHandlerContext ctx) throws Exception {

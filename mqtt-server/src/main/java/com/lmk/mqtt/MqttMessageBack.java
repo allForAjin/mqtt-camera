@@ -28,14 +28,20 @@ import java.util.stream.Collectors;
  * @Description TODO
  * @createTime 2022-06-18 14:00:03
  */
-@Component
 public class MqttMessageBack {
     private static final Logger logger = LoggerFactory.getLogger(MqttMessageBack.class);
     private static ChannelGroup channelGroup;
 
     public static void connectMessageHandler(Channel channel, MqttMessage mqttMessage) {
         MqttConnectPayload payload = (MqttConnectPayload) mqttMessage.payload();
-        MqttConnectMessage connectMessage = (MqttConnectMessage) mqttMessage;
+        MqttConnectMessage connectMessage;
+        try {
+            connectMessage = (MqttConnectMessage) mqttMessage;
+        }catch (ClassCastException e){
+            e.printStackTrace();
+            return;
+        }
+
 
         channel.attr(AttributeKey.valueOf("clientId")).set(connectMessage.payload().clientIdentifier());
         if (ChannelCache.SESSION_STORE_MAP.containsKey(connectMessage.payload().clientIdentifier())) {

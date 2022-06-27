@@ -19,6 +19,7 @@
         <module>mqtt-client</module>
         <module>mqtt-common</module>
         <module>mqtt-rabbitmq</module>
+        <module>mqtt-service</module>
     </modules>
 
     <properties>

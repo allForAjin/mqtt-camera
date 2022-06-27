@@ -1,15 +1,8 @@
-package com.lmk.mqtt;
+package com.lmk.mqtt.client;
 
 
 import com.lmk.mqtt.entity.MqttConfig;
-
-import org.eclipse.paho.client.mqttv3.IMqttDeliveryToken;
-import org.eclipse.paho.client.mqttv3.MqttCallback;
-import org.eclipse.paho.client.mqttv3.MqttClient;
-import org.eclipse.paho.client.mqttv3.MqttClientPersistence;
-import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
-import org.eclipse.paho.client.mqttv3.MqttException;
-import org.eclipse.paho.client.mqttv3.MqttMessage;
+import org.eclipse.paho.client.mqttv3.*;
 import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -236,14 +229,14 @@ public class ClientMqtt {
      * @param qos 服务质量等级QoS
      * @param retained 是否保留消息
      */
-    public void publish(String topic, String message, int qos, boolean retained) {
+    public void publish(String topic, byte[] message, int qos, boolean retained) {
         try {
-            MqttMessage mqttMessage = new MqttMessage(message.getBytes());
+            MqttMessage mqttMessage = new MqttMessage(message);
             mqttMessage.setQos(qos);
             mqttMessage.setRetained(retained);
             client.publish(topic, mqttMessage);
         } catch (Exception e) {
-            logger.error("publish-----发布消息失败:"+topic+",消息内容："+message);
+            logger.error("publish-----发布消息失败:"+topic+",消息内容："+new String(message,StandardCharsets.UTF_8));
             e.printStackTrace();
         }
     }
