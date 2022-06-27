@@ -6,9 +6,10 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
+        <module name="mqtt-rabbitmq" />
+        <module name="mqtt-common" />
         <module name="mqtt-server" />
         <module name="mqtt-client" />
-        <module name="mqtt-common" />
       </profile>
     </annotationProcessing>
   </component>
@@ -16,6 +17,7 @@
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
       <module name="mqtt-client" options="-parameters" />
       <module name="mqtt-common" options="-parameters" />
+      <module name="mqtt-rabbitmq" options="-parameters" />
       <module name="mqtt-server" options="-parameters" />
     </option>
   </component>
