@@ -11,29 +11,31 @@ import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 
 public class ClientMqtt {
-    public static final MqttCallback defaultMqttCallback=new DefaultMqttCallBack();
+    public static final MqttCallback defaultMqttCallback = new DefaultMqttCallBack();
     public static final MqttClientPersistence defaultPersistence = new MemoryPersistence();
     public static final MqttConfig defaultMqttConfig = new MqttConfig();
-    private final Map<String,SubscribeTopic> subscribeTopicMap = new HashMap<>();
+    private final Map<String, SubscribeTopic> subscribeTopicMap = new HashMap<>();
     private static final Logger logger = LoggerFactory.getLogger(ClientMqtt.class);
 
     private MqttClient client;
     private MqttConnectOptions options;
     private MqttConfig mqttConfig;
     private MqttClientPersistence persistence;
-    private MqttCallback callback=defaultMqttCallback;
-    private boolean cleanSession=MqttConnectOptions.CLEAN_SESSION_DEFAULT;
+    private MqttCallback callback = defaultMqttCallback;
+    private boolean cleanSession = MqttConnectOptions.CLEAN_SESSION_DEFAULT;
     private boolean automaticReconnect = true;
-    private Integer keepAlive=MqttConnectOptions.KEEP_ALIVE_INTERVAL_DEFAULT;
+    private Integer keepAlive = MqttConnectOptions.KEEP_ALIVE_INTERVAL_DEFAULT;
     private Integer connectTimeOut = MqttConnectOptions.CONNECTION_TIMEOUT_DEFAULT;
 
 
     /**
      * 创建ClientMqtt客户端对象
      * 使用此类需要先使用该方法
+     *
      * @return this
      */
     public static ClientMqtt createClient() {
@@ -42,6 +44,7 @@ public class ClientMqtt {
 
     /**
      * 设置cleanSession是否清除会话
+     *
      * @param cleanSession 清除会话 true false（默认MqttConnectOptions.CLEAN_SESSION_DEFAULT=true）
      * @return this
      */
@@ -52,40 +55,44 @@ public class ClientMqtt {
 
     /**
      * 设置是否自动重连
+     *
      * @param automaticReconnect 是否自动重连 true false（默认true）
      * @return this
      */
-    public ClientMqtt setAutoMaticReconnect(boolean automaticReconnect){
+    public ClientMqtt setAutoMaticReconnect(boolean automaticReconnect) {
         this.automaticReconnect = automaticReconnect;
         return this;
     }
 
     /**
      * 设置客户端超时时间
+     *
      * @param timeOut 超时时间（秒），默认 MqttConnectOptions.CONNECTION_TIMEOUT_DEFAULT=30
      * @return this
      */
-    public ClientMqtt setConnectTimeOut(int timeOut){
+    public ClientMqtt setConnectTimeOut(int timeOut) {
         this.connectTimeOut = timeOut;
         return this;
     }
 
     /**
      * 设置心跳时间
+     *
      * @param keepAlive 心跳时间（秒），默认 MqttConnectOptions.KEEP_ALIVE_INTERVAL_DEFAULT=60
      * @return this
      */
-    public ClientMqtt setKeepAlive(int keepAlive){
+    public ClientMqtt setKeepAlive(int keepAlive) {
         this.keepAlive = keepAlive;
         return this;
     }
 
     /**
      * 默认设置
+     *
      * @return this
      */
     public ClientMqtt defaultConfigSetting() {
-        if (mqttConfig==null){
+        if (mqttConfig == null) {
             this.mqttConfig = defaultMqttConfig;
         }
         return this;
@@ -93,6 +100,7 @@ public class ClientMqtt {
 
     /**
      * mqtt配置类设置
+     *
      * @param mqttConfig 传入配置类
      * @return this
      */
@@ -103,6 +111,7 @@ public class ClientMqtt {
 
     /**
      * 设置mqtt回调
+     *
      * @param mqttCallback 回调
      * @return this
      */
@@ -113,11 +122,12 @@ public class ClientMqtt {
 
     /**
      * mqtt初始化连接
+     *
      * @return this
      */
     public ClientMqtt connect() {
         if (client == null) {
-            if(persistence==null){
+            if (persistence == null) {
                 persistence = defaultPersistence;
             }
             if (mqttConfig == null) {
@@ -130,7 +140,7 @@ public class ClientMqtt {
                 logger.error("connect()-----mqtt客户端创建连接失败");
                 return this;
             }
-            if (callback==null){
+            if (callback == null) {
                 callback = defaultMqttCallback;
             }
             client.setCallback(callback);
@@ -151,14 +161,38 @@ public class ClientMqtt {
                 client.connect(options);
             } catch (MqttException e) {
                 e.printStackTrace();
-                logger.error("doConnect()-----mqtt客户端连接失败");
+                logger.error("客户端重新连接失败,clientId:{}", client.getClientId());
             }
         }
+    }
+
+    public void reconnect() {
+        new Thread(() -> {
+            int i = 0;
+            while (!isConnected()) {
+                try {
+                    TimeUnit.SECONDS.sleep(10);
+                    logger.error("尝试重连ing....");
+                    doConnect();
+                    i++;
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
+                if (i == 10) {
+                    break;
+                }
+            }
+            if (i < 10) {
+                logger.info("重连成功！");
+                reSubscribe();
+            }
+        }, "client reconnect thread-" + client.getClientId()).start();
     }
 
 
     /**
      * 创建 MqttConnectOptions 对象并设置值
+     *
      * @return MqttConnectOptions
      */
     public MqttConnectOptions createOptions() {
@@ -179,6 +213,7 @@ public class ClientMqtt {
      * 客户端是否连接
      * client为空表示未连接
      * client.isConnected()为false表示未连接
+     *
      * @return true连接，false未连接
      */
     public boolean isConnected() {
@@ -202,69 +237,81 @@ public class ClientMqtt {
      * 重新订阅主题
      */
     public void reSubscribe() {
-        for (Map.Entry<String,SubscribeTopic> entry:subscribeTopicMap.entrySet()){
-            subscribe(entry.getValue().getTopic(),entry.getValue().getQos());
-        }
+        subscribeTopicMap.forEach((key, value) -> {
+            subscribe(value.getTopic(), value.getQos());
+        });
     }
 
     /**
      * 订阅主题（单个）
+     *
      * @param topic 主题
-     * @param qos 服务质量等级QoS
+     * @param qos   服务质量等级QoS
      */
     public void subscribe(String topic, int qos) {
         try {
             client.subscribe(topic, qos);
-            subscribeTopicMap.put(topic,new SubscribeTopic(topic,qos));
+            subscribeTopicMap.put(topic, new SubscribeTopic(topic, qos));
+            logger.info("订阅消息{},列表{}", topic, subscribeTopicMap);
         } catch (Exception e) {
             e.printStackTrace();
-            logger.error("subscribe-----订阅失败:"+topic);
+            logger.error("subscribe-----订阅失败:" + topic);
         }
     }
 
     /**
      * 消息发布
-     * @param topic 目标主题
-     * @param message 消息
-     * @param qos 服务质量等级QoS
+     *
+     * @param topic    目标主题
+     * @param message  消息
+     * @param qos      服务质量等级QoS
      * @param retained 是否保留消息
      */
     public void publish(String topic, byte[] message, int qos, boolean retained) {
+        if (topic == null) {
+            logger.warn("topic can not be null");
+        }
+        if (qos < 0 || qos > 2) {
+            logger.warn("qos error:{}", qos);
+        }
         try {
             MqttMessage mqttMessage = new MqttMessage(message);
             mqttMessage.setQos(qos);
             mqttMessage.setRetained(retained);
             client.publish(topic, mqttMessage);
+            logger.info("publish success,topic:{},message:{}", topic, new String(message, StandardCharsets.UTF_8));
         } catch (Exception e) {
-            logger.error("publish-----发布消息失败:"+topic+",消息内容："+new String(message,StandardCharsets.UTF_8));
+            logger.error("publish fail,topic:{},message:{}", topic, new String(message, StandardCharsets.UTF_8));
             e.printStackTrace();
         }
     }
 
     /**
      * 取消订阅
+     *
      * @param topic 取消订阅主题
      */
-    public void unsubscribe(String topic){
+    public void unsubscribe(String topic) {
         try {
             client.unsubscribe(topic);
             subscribeTopicMap.remove(topic);
         } catch (MqttException e) {
-            logger.error("unsubscribe-----取消订阅失败:"+topic);
+            logger.error("unsubscribe-----取消订阅失败:" + topic);
             e.printStackTrace();
         }
     }
 
     /**
      * 判断主题是否订阅
+     *
      * @param topic 主题
      * @return ture表示已订阅，false表示未订阅
      */
-    public boolean isSubscribed(String topic){
+    public boolean isSubscribed(String topic) {
         return subscribeTopicMap.containsKey(topic);
     }
 
-    public MqttConfig getDefaultMqttConfig(){
+    public MqttConfig getDefaultMqttConfig() {
         return defaultMqttConfig;
     }
 
@@ -278,10 +325,13 @@ public class ClientMqtt {
         return client;
     }
 
-    private static class DefaultMqttCallBack implements MqttCallback {
+    public static class DefaultMqttCallBack implements MqttCallback {
+        private ClientMqtt client;
 
         @Override
         public void connectionLost(Throwable cause) {
+            logger.error("连接断开");
+            client.reconnect();
 
         }
 
@@ -303,9 +353,13 @@ public class ClientMqtt {
                 e.printStackTrace();
             }
         }
+
+        public void setClient(ClientMqtt client) {
+            this.client = client;
+        }
     }
 
-    public static class SubscribeTopic{
+    public static class SubscribeTopic {
         private final String topic;
         private final Integer qos;
 

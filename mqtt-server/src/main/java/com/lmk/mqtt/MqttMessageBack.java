@@ -2,6 +2,7 @@ package com.lmk.mqtt;
 
 import com.lmk.mqtt.cache.ChannelCache;
 import com.lmk.mqtt.entity.*;
+import com.lmk.mqtt.exception.NullChannelException;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.Channel;
@@ -435,7 +436,11 @@ public class MqttMessageBack {
             publishMessageStoreList.add(new PublishMessageStore(clientId, header.topicName(), mqttQoS.value(), header.packetId(), message));
         }
         SessionStore sessionStore = ChannelCache.SESSION_STORE_MAP.get(clientId);
-        Channel channel = channelGroup.find(ChannelCache.CHANNEL_ID_MAP.get(sessionStore.getChannelId()));
+        ChannelId channelId = ChannelCache.CHANNEL_ID_MAP.get(sessionStore.getChannelId());
+        if (channelId==null){
+            throw new NullChannelException("channelId can not be null,client maybe offline but session still exist");
+        }
+        Channel channel = channelGroup.find(channelId);
         //设置发送内容payload
         ByteBuf payload = Unpooled.buffer();
         payload.writeBytes(message.getBytes());

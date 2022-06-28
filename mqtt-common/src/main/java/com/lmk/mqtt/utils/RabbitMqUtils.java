@@ -21,6 +21,8 @@ public class RabbitMqUtils {
     private static final String HOST = "10.200.44.212";
     private static final String USERNAME = "lmk";
     private static final String PASSWORD = "lmk";
+
+    private static final String VIRTUAL_HOST = "test";
     private static volatile ConnectionFactory factory;
 
     private static final Logger logger = LoggerFactory.getLogger(RabbitMqUtils.class);
@@ -39,6 +41,7 @@ public class RabbitMqUtils {
                     factory.setHost(HOST);
                     factory.setUsername(USERNAME);
                     factory.setPassword(PASSWORD);
+                    factory.setVirtualHost(VIRTUAL_HOST);
                 }
             }
         }
@@ -84,6 +87,7 @@ public class RabbitMqUtils {
             throw new NullChannelException("channel can not be null");
         }
         try {
+            channel.confirmSelect();
             ConfirmCallback ackConfirmCallBack = (deliveryTag, multiple) -> {
                 publishMap.headMap(deliveryTag).clear();
                 logger.info("rabbitmq确认回调{}", message);
@@ -95,6 +99,7 @@ public class RabbitMqUtils {
             channel.addConfirmListener(ackConfirmCallBack, nackConfirmCallBack);
             channel.basicPublish(exchangeName, routingKey, MessageProperties.PERSISTENT_TEXT_PLAIN, message);
             publishMap.put(channel.getNextPublishSeqNo(), message);
+            logger.info("发送消息{}",message);
         } catch (IOException e) {
             e.printStackTrace();
         }

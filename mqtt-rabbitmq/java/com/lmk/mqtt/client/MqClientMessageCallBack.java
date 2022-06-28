@@ -1,28 +1,36 @@
 package com.lmk.mqtt.client;
 
-import com.lmk.mqtt.service.TestRabbitMqService;
+import com.lmk.mqtt.constrant.MqttConstant;
+import com.lmk.mqtt.exchange.ExchangeEnum;
+import com.lmk.mqtt.service.api.MqService;
 import org.eclipse.paho.client.mqttv3.IMqttDeliveryToken;
 import org.eclipse.paho.client.mqttv3.MqttCallback;
 import org.eclipse.paho.client.mqttv3.MqttException;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
+import org.springframework.stereotype.Component;
 
-import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 
+@Component
 public class MqClientMessageCallBack implements MqttCallback {
 
     private final Logger logger = LoggerFactory.getLogger(MqClientMessageCallBack.class);
 
-    public MqClientMessageCallBack() {
+    private ClientMqtt client;
 
-    }
+    @Autowired
+    private MqService mqService;
+
 
     @Override
     public void connectionLost(Throwable cause) {
         // 连接丢失后，一般在这里面进行重连
-        logger.info("正在尝试重连");
+        logger.error("连接断开");
+        client.reconnect();
     }
 
     @Override
@@ -30,10 +38,10 @@ public class MqClientMessageCallBack implements MqttCallback {
         // subscribe后得到的消息会执行到这里面
         logger.info("接收消息主题{}", topic);
         logger.info("接收消息Qos{}", message.getQos() + "");
-        String record = new String(message.getPayload(), StandardCharsets.UTF_8);
-        logger.info("接收消息内容{}", record);
+        if (message.getPayload()!=null){
+            mqService.send(message.getPayload(), ExchangeEnum.MQ_TOPIC_EXCHANGE, MqttConstant.ROUTING_KEY);
+        }
 
-        TestRabbitMqService.test(message.getPayload());
     }
 
     @Override
@@ -46,6 +54,12 @@ public class MqClientMessageCallBack implements MqttCallback {
             e.printStackTrace();
         }
 
+    }
+
+    @Autowired
+    @Lazy
+    public void setClient(ClientMqtt client) {
+        this.client = client;
     }
 }
 

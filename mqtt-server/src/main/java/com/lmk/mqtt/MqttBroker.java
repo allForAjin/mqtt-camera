@@ -1,7 +1,5 @@
 package com.lmk.mqtt;
 
-import com.lmk.mqtt.cache.ChannelCache;
-import com.lmk.mqtt.entity.MqttProperties;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.buffer.PooledByteBufAllocator;
 import io.netty.channel.*;
@@ -16,14 +14,6 @@ import io.netty.handler.timeout.IdleStateHandler;
 import io.netty.util.concurrent.GlobalEventExecutor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Lazy;
-import org.springframework.stereotype.Component;
-
-import javax.annotation.PostConstruct;
-import javax.annotation.Resource;
-import java.sql.Time;
-import java.util.concurrent.TimeUnit;
 
 
 /**

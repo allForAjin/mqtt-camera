@@ -1,7 +1,6 @@
 package com.lmk.mqtt.client;
 
 
-import com.lmk.mqtt.service.TestRabbitMqService;
 import org.eclipse.paho.client.mqttv3.IMqttDeliveryToken;
 import org.eclipse.paho.client.mqttv3.MqttCallback;
 import org.eclipse.paho.client.mqttv3.MqttException;
@@ -41,7 +40,6 @@ public class MessageCallBack implements MqttCallback {
         String record = new String(message.getPayload(), StandardCharsets.UTF_8);
         logger.info("接收消息内容{}", record);
 
-        TestRabbitMqService.test(message.getPayload());
     }
 
     @Override
