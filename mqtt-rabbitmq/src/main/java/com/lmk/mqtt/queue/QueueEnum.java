@@ -6,12 +6,12 @@ public enum QueueEnum {
     DEFAULT_QUEUE("default_queue",true,true,false,null,"默认队列"),
     DEFAULT_DEAD_QUEUE("default_dead_queue",true,true,false,null,"默认死信队列")
     ;
-    private String queueName;
-    private boolean durable;
-    private boolean exclusive;
-    private boolean autoDelete;
-    private Map<String,Object> arguments;
-    private String desc;
+    private final String queueName;
+    private final boolean durable;
+    private final boolean exclusive;
+    private final boolean autoDelete;
+    private final Map<String,Object> arguments;
+    private final String desc;
 
     QueueEnum(String queueName, boolean durable, boolean exclusive, boolean autoDelete, Map<String, Object> arguments, String desc) {
         this.queueName = queueName;

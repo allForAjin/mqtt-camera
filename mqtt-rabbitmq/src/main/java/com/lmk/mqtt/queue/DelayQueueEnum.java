@@ -9,17 +9,17 @@ public enum DelayQueueEnum {
     DEFAULT_DELAY_QUEUE("default_delay_queue",true,5000L,ExchangeEnum.DEFAULT_DEAD_EXCHANGE,QueueEnum.DEFAULT_DEAD_QUEUE,"默认延迟队列")
     ;
     //队列名称
-    private String name;
+    private final String name;
     //持久换
-    private boolean durable;
+    private final boolean durable;
     //延迟时间ms
-    private Long ttl;
+    private final Long ttl;
     //监听交换机
-    private ExchangeEnum deadExchangeEnum;
+    private final ExchangeEnum deadExchangeEnum;
     //监听队列
-    private QueueEnum deadQueueEnum;
+    private final QueueEnum deadQueueEnum;
     //队列描述
-    private String desc;
+    private final String desc;
 
     DelayQueueEnum(String name, boolean durable, Long ttl, ExchangeEnum deadExchangeEnum, QueueEnum deadQueueEnum, String desc) {
         this.name = name;
@@ -36,7 +36,6 @@ public enum DelayQueueEnum {
      * @param deadExchange 延迟交换机
      * @param deadQueue 延迟队列
      * @param ttl 延迟时间
-     * @return
      */
     public static Map<String,Object> deadQueueArgumentSetting(String deadExchange, String deadQueue, Long ttl){
         // reply_to 队列

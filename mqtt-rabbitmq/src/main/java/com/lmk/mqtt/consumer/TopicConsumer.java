@@ -1,7 +1,6 @@
 package com.lmk.mqtt.consumer;
 
 import com.lmk.mqtt.constrant.MqttConstant;
-import com.lmk.mqtt.exchange.ExchangeType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.amqp.core.ExchangeTypes;

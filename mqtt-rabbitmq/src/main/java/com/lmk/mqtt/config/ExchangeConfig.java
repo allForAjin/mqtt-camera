@@ -1,9 +1,6 @@
 package com.lmk.mqtt.config;
 
-import com.lmk.mqtt.constrant.MqttConstant;
 import com.lmk.mqtt.exchange.ExchangeEnum;
-import com.lmk.mqtt.exchange.ExchangeType;
-import org.springframework.amqp.core.DirectExchange;
 import org.springframework.amqp.core.TopicExchange;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

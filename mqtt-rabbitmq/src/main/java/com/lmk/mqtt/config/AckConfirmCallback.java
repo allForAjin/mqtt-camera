@@ -1,7 +1,5 @@
 package com.lmk.mqtt.config;
 
-import com.rabbitmq.client.ConfirmCallback;
-import org.apache.juli.logging.LogFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.amqp.rabbit.connection.CorrelationData;

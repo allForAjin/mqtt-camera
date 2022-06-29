@@ -1,16 +1,10 @@
 package com.lmk.mqtt;
 
-import com.lmk.mqtt.client.MqClient;
-
-/**
- * @author lmk
- * @version 1.0.0
- * @ClassName RabbitMqClientApplication.java
- * @Description TODO
- * @createTime 2022-06-27 19:41:51
- */
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+@SpringBootApplication
 public class RabbitMqClientApplication {
     public static void main(String[] args) {
-        new MqClient().init();
+        SpringApplication.run(RabbitMqClientApplication.class,args);
     }
 }
