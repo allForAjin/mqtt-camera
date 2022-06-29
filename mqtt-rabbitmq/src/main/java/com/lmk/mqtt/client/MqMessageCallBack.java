@@ -1,6 +1,7 @@
 package com.lmk.mqtt.client;
 
 
+import com.lmk.mqtt.service.TestRabbitMqService;
 import org.eclipse.paho.client.mqttv3.IMqttDeliveryToken;
 import org.eclipse.paho.client.mqttv3.MqttCallback;
 import org.eclipse.paho.client.mqttv3.MqttException;
@@ -19,18 +20,20 @@ import java.util.concurrent.TimeUnit;
  * @Description TODO
  * @createTime 2022-06-10 15:50:59
  */
-public class MessageCallBack implements MqttCallback {
+public class MqMessageCallBack implements MqttCallback {
 
     private final Logger logger = LoggerFactory.getLogger(MqMessageCallBack.class);
+
     private ClientMqtt client;
 
-    public MessageCallBack(ClientMqtt client) {
+    public MqMessageCallBack(ClientMqtt client) {
         this.client = client;
     }
 
     @Override
     public void connectionLost(Throwable cause) {
         // 连接丢失后，一般在这里面进行重连
+
         new Thread(()->{
             while (true){
                 logger.info("正在尝试重连...");
@@ -47,6 +50,7 @@ public class MessageCallBack implements MqttCallback {
             logger.info("成功重连！");
 
         },"reconnect").start();
+
     }
 
     @Override
@@ -57,17 +61,14 @@ public class MessageCallBack implements MqttCallback {
         String record = new String(message.getPayload(), StandardCharsets.UTF_8);
         logger.info("接收消息内容{}", record);
 
+        TestRabbitMqService.test(message.getPayload());
+
     }
 
     @Override
     public void deliveryComplete(IMqttDeliveryToken token) {
         logger.info("发送消息{}", token.isComplete() + "");
         logger.info("发送消息主题{}", Arrays.toString(token.getTopics()));
-        try {
-            logger.info("发布消息内容{}", token.getMessage() + "");
-        } catch (MqttException e) {
-            e.printStackTrace();
-        }
 
     }
 
