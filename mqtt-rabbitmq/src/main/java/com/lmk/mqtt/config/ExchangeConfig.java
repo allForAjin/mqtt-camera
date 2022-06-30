@@ -1,6 +1,7 @@
 package com.lmk.mqtt.config;
 
 import com.lmk.mqtt.exchange.ExchangeEnum;
+import org.springframework.amqp.core.DirectExchange;
 import org.springframework.amqp.core.TopicExchange;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -30,4 +31,10 @@ public class ExchangeConfig {
         ExchangeEnum exchangeEnum = ExchangeEnum.MQ_TOPIC_EXCHANGE;
         return new TopicExchange(exchangeEnum.getExchangeName(),exchangeEnum.isDurable(),false,null);
     }
+
+//    @Bean
+//    public DirectExchange deadExchange(){
+//        ExchangeEnum exchangeEnum = ExchangeEnum.DEFAULT_DEAD_EXCHANGE;
+//        return new DirectExchange(exchangeEnum.getExchangeName(),exchangeEnum.isDurable(),false,null);
+//    }
 }

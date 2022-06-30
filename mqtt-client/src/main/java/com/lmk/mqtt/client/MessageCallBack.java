@@ -21,7 +21,7 @@ import java.util.concurrent.TimeUnit;
  */
 public class MessageCallBack implements MqttCallback {
 
-    private final Logger logger = LoggerFactory.getLogger(MqMessageCallBack.class);
+    private final Logger logger = LoggerFactory.getLogger(MessageCallBack.class);
     private ClientMqtt client;
 
     public MessageCallBack(ClientMqtt client) {
@@ -31,22 +31,7 @@ public class MessageCallBack implements MqttCallback {
     @Override
     public void connectionLost(Throwable cause) {
         // 连接丢失后，一般在这里面进行重连
-        new Thread(()->{
-            while (true){
-                logger.info("正在尝试重连...");
-                boolean connected = client.reConnect();
-                if (connected){
-                    break;
-                }
-                try {
-                    TimeUnit.SECONDS.sleep(10);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            }
-            logger.info("成功重连！");
-
-        },"reconnect").start();
+        client.reconnect();
     }
 
     @Override

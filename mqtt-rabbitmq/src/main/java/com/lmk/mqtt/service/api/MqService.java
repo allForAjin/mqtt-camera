@@ -1,6 +1,7 @@
 package com.lmk.mqtt.service.api;
 
 import com.lmk.mqtt.exchange.ExchangeEnum;
+import com.lmk.mqtt.queue.DelayQueueEnum;
 import com.lmk.mqtt.queue.QueueEnum;
 
 public interface MqService {
@@ -47,6 +48,8 @@ public interface MqService {
      * @param routingKey   routingKey
      */
     void send(Object msg, ExchangeEnum exchangeEnum, QueueEnum queueEnum, String routingKey);
+
+    void sendDelayMsg(Object msg, ExchangeEnum exchangeEnum, DelayQueueEnum delayQueueEnum, String routingKey,String deadRoutingKey);
 
 
 }

@@ -14,11 +14,11 @@ import org.springframework.stereotype.Component;
 public class TopicConsumer {
     private final Logger logger = LoggerFactory.getLogger(TopicConsumer.class);
 
-    @RabbitListener(bindings = @QueueBinding(
-            value = @Queue(name = MqttConstant.MQ_QUEUE_NAME,durable = "true"),
-            exchange = @Exchange(name = MqttConstant.EXCHANGE_NAME,type = ExchangeTypes.TOPIC),
-            key = {MqttConstant.ROUTING_KEY}
-    ))
+//    @RabbitListener(bindings = @QueueBinding(
+//            value = @Queue(name = MqttConstant.MQ_QUEUE_NAME,durable = "true"),
+//            exchange = @Exchange(name = MqttConstant.EXCHANGE_NAME,type = ExchangeTypes.TOPIC),
+//            key = {MqttConstant.ROUTING_KEY}
+//    ))
     public void handlerMessage(byte[] msg){
         logger.info("消费者消费消息：{}",new String(msg));
     }

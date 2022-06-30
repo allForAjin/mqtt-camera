@@ -2,6 +2,7 @@ package com.lmk.mqtt.client;
 
 import com.lmk.mqtt.constrant.MqttConstant;
 import com.lmk.mqtt.exchange.ExchangeEnum;
+import com.lmk.mqtt.queue.DelayQueueEnum;
 import com.lmk.mqtt.service.api.MqService;
 import org.eclipse.paho.client.mqttv3.IMqttDeliveryToken;
 import org.eclipse.paho.client.mqttv3.MqttCallback;
@@ -38,7 +39,7 @@ public class MqClientMessageCallBack implements MqttCallback {
         // subscribe后得到的消息会执行到这里面
         logger.info("接收消息主题{}", topic);
         logger.info("接收消息Qos{}", message.getQos() + "");
-        if (message.getPayload()!=null){
+        if (message.getPayload() != null) {
             mqService.send(message.getPayload(), ExchangeEnum.MQ_TOPIC_EXCHANGE, MqttConstant.ROUTING_KEY);
         }
 
@@ -49,7 +50,7 @@ public class MqClientMessageCallBack implements MqttCallback {
         logger.info("发送消息{}", token.isComplete() + "");
         logger.info("发送消息主题{}", Arrays.toString(token.getTopics()));
         try {
-            logger.info("发布消息内容{}", token.getMessage() + "");
+            logger.info("发布消息内容{}", new String(token.getMessage().getPayload()) + "");
         } catch (MqttException e) {
             e.printStackTrace();
         }

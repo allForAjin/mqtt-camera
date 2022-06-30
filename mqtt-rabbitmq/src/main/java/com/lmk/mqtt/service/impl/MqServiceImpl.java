@@ -1,6 +1,7 @@
 package com.lmk.mqtt.service.impl;
 
 import com.lmk.mqtt.exchange.ExchangeEnum;
+import com.lmk.mqtt.queue.DelayQueueEnum;
 import com.lmk.mqtt.queue.QueueEnum;
 import com.lmk.mqtt.service.api.MqService;
 import org.springframework.amqp.core.Binding;
@@ -47,9 +48,28 @@ public class MqServiceImpl implements MqService {
         rabbitTemplate.convertAndSend(exchangeEnum.getExchangeName(), routingKey, msg);
     }
 
+    @Override
+    public void sendDelayMsg(Object msg, ExchangeEnum exchangeEnum, DelayQueueEnum delayQueueEnum, String routingKey,String deadRoutingKey) {
+        //绑定延时队列
+        this.bindExchangeAndDelayQueue(exchangeEnum,delayQueueEnum,routingKey);
+        //绑定死信
+        this.bindExchangeAndQueue(delayQueueEnum.getDeadExchangeEnum(),delayQueueEnum.getDeadQueueEnum(),deadRoutingKey);
+        rabbitTemplate.convertAndSend(exchangeEnum.getExchangeName(), routingKey, msg);
+    }
+
     private void bindExchangeAndQueue(ExchangeEnum exchangeEnum, QueueEnum queueEnum, String routingKey) {
         rabbitAdmin.declareBinding(
                 new Binding(queueEnum.getQueueName(),
+                        Binding.DestinationType.QUEUE,
+                        exchangeEnum.getExchangeName(),
+                        routingKey,
+                        null)
+        );
+    }
+
+    private void bindExchangeAndDelayQueue(ExchangeEnum exchangeEnum, DelayQueueEnum delayQueueEnum, String routingKey) {
+        rabbitAdmin.declareBinding(
+                new Binding(delayQueueEnum.getName(),
                         Binding.DestinationType.QUEUE,
                         exchangeEnum.getExchangeName(),
                         routingKey,

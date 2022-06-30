@@ -7,4 +7,6 @@ public class MqttConstant {
     public static final String MQ_QUEUE_NAME = "camera";
     public static final String EXCHANGE_NAME = "topic.exchange";
     public static final String ROUTING_KEY = "topic.#";
+
+    public static final String DEAD_EXCHANGE_NAME="default_dead_exchange";
 }

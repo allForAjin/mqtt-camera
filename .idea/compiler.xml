@@ -9,10 +9,12 @@
         <module name="mqtt-rabbitmq" />
         <module name="mqtt-common" />
         <module name="mqtt-server" />
-        <module name="mqtt-service" />
         <module name="mqtt-client" />
       </profile>
     </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="mqtt-service" target="1.8" />
+    </bytecodeTargetLevel>
   </component>
   <component name="JavacSettings">
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
