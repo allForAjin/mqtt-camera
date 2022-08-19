@@ -1,0 +1,9 @@
+2022-08-01 16:35:38.810 INFO [http-nio-8001-exec-5]com.lmk.mqtt.client.ClientMqtt.publish:286 -publish success,topic---camera,message---test
+2022-08-01 16:35:38.811 INFO [MQTT Call: rabbitmq-client]com.lmk.mqtt.client.ClientMqtt.reconnect:171 -begin to reconnect
+2022-08-01 16:35:48.818 INFO [client reconnect thread-rabbitmq-client]com.lmk.mqtt.client.ClientMqtt.lambda$reconnect$0:177 -trying to reconnect....
+2022-08-01 16:35:49.147 INFO [client reconnect thread-rabbitmq-client]com.lmk.mqtt.client.ClientMqtt.doConnect:162 -mqtt client connect complete,isConnected---true
+2022-08-01 16:35:49.147 INFO [client reconnect thread-rabbitmq-client]com.lmk.mqtt.client.ClientMqtt.lambda$reconnect$0:189 -success to reconnect！
+2022-08-01 16:35:49.147 INFO [client reconnect thread-rabbitmq-client]com.lmk.mqtt.client.ClientMqtt.reSubscribe:243 -begin to reSubscribe topic
+2022-08-01 16:35:49.147 INFO [client reconnect thread-rabbitmq-client]com.lmk.mqtt.client.ClientMqtt.subscribe:260 -subscribe,topic---camera,subscribeTopicMap---{camera=SubscribeTopic{topic='camera', qos=2}}
+2022-08-01 16:35:49.147 INFO [client reconnect thread-rabbitmq-client]com.lmk.mqtt.client.ClientMqtt.reSubscribe:247 -reSubscribe finish
+2022-08-01 16:35:49.147 INFO [MQTT Call: rabbitmq-client]com.lmk.mqtt.client.MqClientMessageCallBack.messageArrived:51 -messageArrived,topic---camera,qos---2,content---test

@@ -1,0 +1,42 @@
+{
+  "groups": [
+    {
+      "name": "mqtt",
+      "type": "com.lmk.mqtt.properties.MqttClientProperties",
+      "sourceType": "com.lmk.mqtt.properties.MqttClientProperties"
+    }
+  ],
+  "properties": [
+    {
+      "name": "mqtt.client-id",
+      "type": "java.lang.String",
+      "sourceType": "com.lmk.mqtt.properties.MqttClientProperties"
+    },
+    {
+      "name": "mqtt.host",
+      "type": "java.lang.String",
+      "sourceType": "com.lmk.mqtt.properties.MqttClientProperties"
+    },
+    {
+      "name": "mqtt.password",
+      "type": "java.lang.String",
+      "sourceType": "com.lmk.mqtt.properties.MqttClientProperties"
+    },
+    {
+      "name": "mqtt.username",
+      "type": "java.lang.String",
+      "sourceType": "com.lmk.mqtt.properties.MqttClientProperties"
+    },
+    {
+      "name": "mqtt.will-qos",
+      "type": "java.lang.Integer",
+      "sourceType": "com.lmk.mqtt.properties.MqttClientProperties"
+    },
+    {
+      "name": "mqtt.will-topic",
+      "type": "java.lang.String",
+      "sourceType": "com.lmk.mqtt.properties.MqttClientProperties"
+    }
+  ],
+  "hints": []
+}
